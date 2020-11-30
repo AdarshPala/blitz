@@ -23,5 +23,10 @@ app.get('/fib/:num', (req, res) => {
   return res.json(ans);
 });
 
+app.use((req, res, next) => {
+  console.log(`Could not find ${req.method} ${req.path}`);
+  return res.status(404).send('Not Found');
+});
+
 const server = http.createServer(app);
 server.listen(PORT, () => console.log(`cpu test listening on port ${PORT}`));

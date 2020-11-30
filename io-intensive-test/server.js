@@ -24,5 +24,10 @@ app.get('/file', (req, res) => {
   });
 });
 
+app.use((req, res, next) => {
+  console.log(`Could not find ${req.method} ${req.path}`);
+  return res.status(404).send('Not Found');
+});
+
 const server = http.createServer(app);
 server.listen(PORT, () => console.log(`io test listening on port ${PORT}`));
