@@ -15,15 +15,19 @@ const callback = (req, time) => {
 const agent = request.agent().use(responseTime(callback));
 console.log('Sending requests to the server...');
 
+//let x = 0;
 const perfTest = new Promise((resolve, reject) => {
-  for (let i = 0; i < 42; i++) {
+  for (let i = 0; i < 92; i++) {
+    //x++;
+    //setTimeout(() => {
     xAxisLabels.push(i);
     agent
-      .get(`http://localhost:3001/fib/${i}`)
+      //.get(`http://localhost:3001/fib/${i}`)
+      .get('http://localhost:3002/file')
       .then((res) => {
         // res.body, res.headers, res.status
-        console.log(res.body);
-        if (latencies.length === 42) {
+        //console.log(res.body);
+        if (latencies.length === 92) {
           resolve();
         }
       })
@@ -31,6 +35,7 @@ const perfTest = new Promise((resolve, reject) => {
         // err.message, err.response
         console.log('Error: ', err.message);
       });
+  //}, 3000 * x);
   }
 })
 const width = 400;

@@ -23,6 +23,7 @@
   "dependencies": {
     "chart.js": "^2.9.4",
     "chartjs-node-canvas": "^3.0.6",
+    "express": "^4.17.1",
     "superagent": "^6.1.0",
     "superagent-response-time": "^1.0.3"
   }
