@@ -1,6 +1,9 @@
 'use strict';
 
-function fibonacci(num) {
+const http = require('http');
+const express = require('express');
+
+const fibonacci = (num) => {
   if (num <= 0) {
     return 0;
   }
@@ -10,9 +13,6 @@ function fibonacci(num) {
 
   return fibonacci(num - 1) + fibonacci(num - 2);
 }
-
-const http = require('http');
-const express = require('express');
 
 const PORT = 3001;
 const app = express();

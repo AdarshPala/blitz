@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/AdarshPala/blitz#readme",
   "dependencies": {
-    "superagent": "^6.1.0"
+    "superagent": "^6.1.0",
+    "superagent-response-time": "^1.0.3"
   }
 }
