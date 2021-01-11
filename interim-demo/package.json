@@ -1,0 +1,30 @@
+{
+  "name": "blitz",
+  "version": "1.0.0",
+  "description": "A performance testing tool",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AdarshPala/blitz.git"
+  },
+  "keywords": [
+    "performance",
+    "testing"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AdarshPala/blitz/issues"
+  },
+  "homepage": "https://github.com/AdarshPala/blitz#readme",
+  "dependencies": {
+    "chart.js": "^2.9.4",
+    "chartjs-node-canvas": "^3.0.6",
+    "express": "^4.17.1",
+    "superagent": "^6.1.0",
+    "superagent-response-time": "^1.0.3"
+  }
+}
