@@ -16,13 +16,13 @@ const app = express();
 app.use(cors(corsOptions));
 
 app.get('/file', (req, res) => {
-  fs.readFile('io-intensive-test/large.bmp', (err, data1) => {
+  fs.readFile(`${__dirname}/large.bmp`, (err, data1) => {
     if (err) throw err;
-    fs.writeFile('io-intensive-test/large.bmp', data1, (err) => {
+    fs.writeFile(`${__dirname}/large.bmp`, data1, (err) => {
       if (err) throw err;
-      fs.readFile('io-intensive-test/large.bmp', (err, data2) => {
+      fs.readFile(`${__dirname}/large.bmp`, (err, data2) => {
         if (err) throw err;
-        fs.writeFile('io-intensive-test/large.bmp', data2, (err) => {
+        fs.writeFile(`${__dirname}/large.bmp`, data2, (err) => {
           if (err) throw err;
           console.log('I/O done');
           return res.end();
