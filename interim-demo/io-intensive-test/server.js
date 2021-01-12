@@ -3,18 +3,26 @@
 const http = require('http');
 const fs = require('fs');
 const express = require('express');
+const cors = require('cors');
+
+const corsOptions = {
+  origin: [`http://localhost:3000`, `http://localhost:3002`],
+  credentials: false,
+};
 
 const PORT = 3002;
 const app = express();
 
+app.use(cors(corsOptions));
+
 app.get('/file', (req, res) => {
-  fs.readFile('large.bmp', (err, data1) => {
+  fs.readFile('io-intensive-test/large.bmp', (err, data1) => {
     if (err) throw err;
-    fs.writeFile('large.bmp', data1, (err) => {
+    fs.writeFile('io-intensive-test/large.bmp', data1, (err) => {
       if (err) throw err;
-      fs.readFile('large.bmp', (err, data2) => {
+      fs.readFile('io-intensive-test/large.bmp', (err, data2) => {
         if (err) throw err;
-        fs.writeFile('large.bmp', data2, (err) => {
+        fs.writeFile('io-intensive-test/large.bmp', data2, (err) => {
           if (err) throw err;
           console.log('I/O done');
           return res.end();

@@ -2,6 +2,7 @@
 
 const http = require('http');
 const express = require('express');
+const cors = require('cors');
 
 const fibonacci = (num) => {
   if (num <= 0) {
@@ -16,6 +17,13 @@ const fibonacci = (num) => {
 
 const PORT = 3001;
 const app = express();
+
+const corsOptions = {
+  origin: [`http://localhost:3000`, `http://localhost:3001`],
+  credentials: false,
+};
+
+app.use(cors(corsOptions));
 
 app.get('/fib/:num', (req, res) => {
   const ans = fibonacci(+req.params.num);
