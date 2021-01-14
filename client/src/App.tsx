@@ -8,7 +8,7 @@ const COMPLETE = 'complete';
 const FAILED = 'failed';
 
 const config : Config = {
-  phases: [
+  testPhases: [
     {
       loadProfile: {
         duration: 1,

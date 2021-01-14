@@ -6,16 +6,16 @@ export interface LoadProfile {
 export interface ApiFlow {
   method: 'get' | 'put' | 'post' | 'patch' | 'delete',
   resource: string,
-  body?: Object,
+  body?: object,
 };
 
-export interface Phase {
+export interface testPhase {
   loadProfile: LoadProfile,
   apiFlow: ApiFlow,
 };
 
 export interface Config {
-  phases: Phase[]
+  testPhases: testPhase[]
   domain: string,
   port?: number,
 };
