@@ -14,7 +14,7 @@ export interface testPhase {
   apiFlow: ApiFlow,
 };
 
-export interface Config {
+export interface TestConfig {
   testPhases: testPhase[]
   domain: string,
   port?: number,

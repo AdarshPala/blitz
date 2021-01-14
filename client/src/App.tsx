@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { ChartData, Line } from 'react-chartjs-2';
 import runPerfTest from './runPerfTest';
-import { Config } from './types';
+import { TestConfig } from './types';
 
 const PENDING = 'pending';
 const COMPLETE = 'complete';
 const FAILED = 'failed';
 
-const config : Config = {
+const config : TestConfig = {
   testPhases: [
     {
       loadProfile: {

@@ -1,5 +1,5 @@
 import superagent from 'superagent';
-import { Config, GraphData } from './types';
+import { TestConfig, GraphData } from './types';
 
 type ResponseTimePluginCb = (responseTime : number) => void;
 
@@ -23,9 +23,9 @@ const responseTimeCb = (time : number) => {
 };
 
 // Assuming a single phase for now
-const runPerfTest = (config : Config) => {
+const runPerfTest = (config : TestConfig) => {
   const perfTest = new Promise<GraphData>((resolve, reject) => {
-    config.phases.forEach((phase) => {
+    config.testPhases.forEach((phase) => {
       const totalNumOfReq = phase.loadProfile.duration * phase.loadProfile.requestRate;
       const delayBetweenEachReq = 1 / phase.loadProfile.requestRate * MS_PER_SEC;
 
