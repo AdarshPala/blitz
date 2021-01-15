@@ -9,13 +9,13 @@ export interface ApiFlow {
   body?: object,
 };
 
-export interface testPhase {
+export interface TestPhase {
   loadProfile: LoadProfile,
   apiFlow: ApiFlow,
 };
 
 export interface TestConfig {
-  testPhases: testPhase[]
+  testPhases: TestPhase[]
   domain: string,
   port?: number,
 };

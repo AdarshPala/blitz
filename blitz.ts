@@ -26,5 +26,5 @@ app.get('/', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`️Blitz server is running at http://localhost:${PORT}`);
+  console.log(`️blitz server is running at http://localhost:${PORT}`);
 });
