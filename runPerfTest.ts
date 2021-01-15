@@ -1,14 +1,15 @@
 import superagent from 'superagent';
 import { TestConfig, GraphData } from './client/src/types';
 
-type ResponseTimePluginCb = (responseTime : number) => void;
+type ResponseTimePluginCb = (responseTime: number) => void;
 
 const MS_PER_SEC = 1e3;
-const xAxisLabels : number[] = [];
-const yAxisValues : number[] = [];
+const xAxisLabels: number[] = [];
+const yAxisValues: number[] = [];
 
-const responseTimePlugin = (cb : ResponseTimePluginCb) =>
-  (req : superagent.SuperAgentRequest) => {
+// TODO use superagent-response-time for high-resolution times
+const responseTimePlugin = (cb: ResponseTimePluginCb) =>
+  (req: superagent.SuperAgentRequest) => {
     const start = Date.now();
 
     req.on('end', () => {
@@ -17,13 +18,13 @@ const responseTimePlugin = (cb : ResponseTimePluginCb) =>
     });
   };
 
-const responseTimeCb = (time : number) => {
+const responseTimeCb = (time: number) => {
   console.log(`Received response in ${time} ms`);
   yAxisValues.push(time);
 };
 
 // Assuming a single phase for now
-const runPerfTest = (config : TestConfig) => {
+const runPerfTest = (config: TestConfig) => {
   const perfTest = new Promise<GraphData>((resolve, reject) => {
     config.testPhases.forEach((phase) => {
       const totalNumOfReq = phase.loadProfile.duration * phase.loadProfile.requestRate;
@@ -39,7 +40,7 @@ const runPerfTest = (config : TestConfig) => {
           const endpoint = `${config.domain}:${config.port}/${phase.apiFlow.resource}`;
 
           // agent[phase.apiFlow.method](endpoint)
-          agent['get'](`http://localhost:3001/fib/${30}`)
+          agent['get'](`http://localhost:3001/fib/${i}`)
             .timeout({
               deadline: 600000,
               response: 600000,

@@ -8,12 +8,12 @@ const PENDING = 'pending';
 const COMPLETE = 'complete';
 const FAILED = 'failed';
 
-const config : TestConfig = {
+const config: TestConfig = {
   testPhases: [
     {
       loadProfile: {
-        duration: 5,
-        requestRate: 600,
+        duration: 0.1,
+        requestRate: 400,
       },
       apiFlow: {
         method: 'get',
@@ -39,7 +39,7 @@ function App() {
       .then((res) => {
         const { xAxisLabels } = res.body;
         const { yAxisValues } = res.body;
-        const newdata : ChartData<Chart.ChartData> = {
+        const newdata: ChartData<Chart.ChartData> = {
           labels: xAxisLabels,
           datasets: [
             {
@@ -62,6 +62,7 @@ function App() {
               pointRadius: 1,
               pointHitRadius: 10,
               data: yAxisValues,
+              // showLine: false,
             }
           ]
         };
