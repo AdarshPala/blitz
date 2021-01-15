@@ -24,3 +24,11 @@ export interface GraphData {
   xAxisLabels: number[]
   yAxisValues: number[]
 };
+
+export function isTestConfig(input: any): input is TestConfig {
+  if (!input || typeof input !== 'object') {
+    return false;
+  }
+
+  return true;
+};

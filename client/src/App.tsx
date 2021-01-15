@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import qs from 'qs';
+import superagent from 'superagent';
 import { ChartData, Line } from 'react-chartjs-2';
-import runPerfTest from './runPerfTest';
 import { TestConfig } from './types';
 
 const PENDING = 'pending';
@@ -11,8 +12,8 @@ const config : TestConfig = {
   testPhases: [
     {
       loadProfile: {
-        duration: 1,
-        requestRate: 45,
+        duration: 5,
+        requestRate: 600,
       },
       apiFlow: {
         method: 'get',
@@ -30,8 +31,14 @@ function App() {
   const [ perfTestState, setPerfState ] = useState(PENDING);
   const [ initdata, setInitData ] = useState(data123);
   useEffect(() => {
-    runPerfTest(config)
-      .then(({ xAxisLabels, yAxisValues }) => {
+    superagent.get(`http://localhost:3003/?${qs.stringify(config)}`)
+      .timeout({
+        deadline: 600000,
+        response: 600000,
+      })
+      .then((res) => {
+        const { xAxisLabels } = res.body;
+        const { yAxisValues } = res.body;
         const newdata : ChartData<Chart.ChartData> = {
           labels: xAxisLabels,
           datasets: [

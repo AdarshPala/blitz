@@ -1,5 +1,5 @@
 import superagent from 'superagent';
-import { TestConfig, GraphData } from './types';
+import { TestConfig, GraphData } from './client/src/types';
 
 type ResponseTimePluginCb = (responseTime : number) => void;
 
@@ -38,8 +38,12 @@ const runPerfTest = (config : TestConfig) => {
           const agent = superagent.agent().use(responseTimePlugin(responseTimeCb));
           const endpoint = `${config.domain}:${config.port}/${phase.apiFlow.resource}`;
 
-          agent[phase.apiFlow.method](endpoint)
-          // agent['get'](`http://localhost:3001/fib/${i}`)
+          // agent[phase.apiFlow.method](endpoint)
+          agent['get'](`http://localhost:3001/fib/${30}`)
+            .timeout({
+              deadline: 600000,
+              response: 600000,
+            })
             .send(phase.apiFlow.body)
             .then((res) => {
               console.log(res.body);
@@ -50,7 +54,7 @@ const runPerfTest = (config : TestConfig) => {
               }
             })
             .catch((err) => {
-              console.log('Error: ', err.message);
+              console.log('Error: ', err);
               return reject(err);
             });
         }, delayBetweenEachReq * i);

@@ -119,3 +119,4 @@ dist
 .env.test.local
 .env.production.local
 large.bmp
+testimage.png
