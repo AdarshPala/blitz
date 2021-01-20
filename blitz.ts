@@ -19,7 +19,8 @@ app.get('/', async (req, res) => {
   try {
     perfTestResults = await runPerfTest(req.query);
   } catch (err) {
-    return res.status(INTERNAL_SERVER_ERROR).end();
+    console.log('Error in endpoint ', err)
+    return res.status(INTERNAL_SERVER_ERROR).send(err);
   }
 
   return res.json(perfTestResults);

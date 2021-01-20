@@ -20,11 +20,6 @@ export interface TestConfig {
   port?: number,
 };
 
-// export interface GraphData {
-//   xAxisLabels: number[]
-//   yAxisValues: number[]
-// };
-
 export interface GraphData {
   xAxisLabels: number[]
   yAxisValues: number[][]
