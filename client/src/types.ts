@@ -3,7 +3,7 @@ export interface LoadProfile {
   requestRate: number,
 };
 
-export interface ApiFlow {
+export interface ApiRequest {
   method: 'get' | 'put' | 'post' | 'patch' | 'delete',
   resource: string,
   body?: object,
@@ -11,7 +11,7 @@ export interface ApiFlow {
 
 export interface TestPhase {
   loadProfile: LoadProfile,
-  apiFlow: ApiFlow,
+  apiFlow: ApiRequest[],
 };
 
 export interface TestConfig {
@@ -20,9 +20,18 @@ export interface TestConfig {
   port?: number,
 };
 
+// export interface GraphData {
+//   xAxisLabels: number[]
+//   yAxisValues: number[]
+// };
+
 export interface GraphData {
   xAxisLabels: number[]
-  yAxisValues: number[]
+  yAxisValues: number[][]
+};
+
+export interface BlitzResponseBody {
+  testResults: GraphData[]
 };
 
 export function isTestConfig(input: any): input is TestConfig {

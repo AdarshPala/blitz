@@ -12,18 +12,36 @@ const config: TestConfig = {
   testPhases: [
     {
       loadProfile: {
-        duration: 0.1,
-        requestRate: 400,
+        duration: 10,
+        requestRate: 8,
       },
-      apiFlow: {
-        method: 'get',
-        resource: 'file',
-      },
+      apiFlow: [
+        // {
+        //   method: 'post',
+        //   resource: 'sessions',
+        //   body: {
+        //     username: 'heyo',
+        //     password: 'passwd',
+        //   },
+        // },
+        {
+          method: 'put',
+          resource: 'users',
+          body: {
+            username: 'heyo' + Math.random(),
+            password: 'passwd',
+          },
+        },
+        {
+          method: 'get',
+          resource: 'conversations',
+        },
+      ],
     }
   ],
   domain: 'http://localhost',
-  port: 3002,
-}
+  port: 3001,
+};
 
 function App() {
   // To change height/width you can try using ChartComponent instead (defined in react-chartjs-2\index.d.ts)
@@ -37,8 +55,8 @@ function App() {
         response: 600000,
       })
       .then((res) => {
-        const { xAxisLabels } = res.body;
-        const { yAxisValues } = res.body;
+        const { xAxisLabels } = res.body.testResults[0];
+        const { yAxisValues } = res.body.testResults[0];
         const newdata: ChartData<Chart.ChartData> = {
           labels: xAxisLabels,
           datasets: [
@@ -61,7 +79,30 @@ function App() {
               pointHoverBorderWidth: 2,
               pointRadius: 1,
               pointHitRadius: 10,
-              data: yAxisValues,
+              data: yAxisValues[0],
+              // showLine: false,
+            },
+            {
+              label: 'My Second dataset',
+              fill: false,
+              lineTension: 0.1,
+              backgroundColor: 'rgba(75,192,192,0.4)',
+              borderColor: 'rgba(222,192,192,1)',
+              borderCapStyle: 'butt',
+              borderDash: [],
+              borderDashOffset: 0.0,
+              borderJoinStyle: 'miter',
+              pointBorderColor: 'rgba(75,192,192,1)',
+              pointBackgroundColor: '#fff',
+              pointBorderWidth: 1,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+              pointHoverBorderColor: 'rgba(220,220,220,1)',
+              pointHoverBorderWidth: 2,
+              pointRadius: 1,
+              pointHitRadius: 10,
+              // data: [50, 22],
+              data: yAxisValues[1],
               // showLine: false,
             }
           ]
@@ -69,7 +110,8 @@ function App() {
         setInitData(newdata);
         setPerfState(COMPLETE);
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log('ERRRROR', err)
         setPerfState(FAILED);
       });
   }, []);

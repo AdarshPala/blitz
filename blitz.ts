@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from 'http-status';
-import { GraphData, isTestConfig } from './client/src/types';
+import { BlitzResponseBody, isTestConfig } from './client/src/types';
 import runPerfTest from './runPerfTest';
 
 const app = express();
@@ -15,7 +15,7 @@ app.get('/', async (req, res) => {
     return res.status(BAD_REQUEST).end();
   }
 
-  let perfTestResults: GraphData;
+  let perfTestResults: BlitzResponseBody;
   try {
     perfTestResults = await runPerfTest(req.query);
   } catch (err) {
