@@ -93,16 +93,18 @@ const runPerfTest = (config: TestConfig) => {
         const agent = superagent.agent();
 
         const endpoint = `${config.domain}:${config.port}/${phase.apiFlow[0].resource}`;
-        agent[phase.apiFlow[0].method](endpoint)
-        // agent['get'](`http://localhost:3001/fib/${20}`)
-          .timeout(TIMEOUT_INFO)
-          //.send(apiReq.body)
-          .send({ username: 'foo' + Math.random(), password: 'passwd' })
-          .then(continueApiFlow(agent, phase.apiFlow, 1, testState, Date.now(), { resolve, reject }))
-          .catch((err) => {
-            console.log('Error: ', err);
-            return reject(err);
-          });
+        setTimeout(() => {
+          agent[phase.apiFlow[0].method](endpoint)
+          // agent['get'](`http://localhost:3001/fib/${20}`)
+            .timeout(TIMEOUT_INFO)
+            //.send(apiReq.body)
+            .send({ username: 'foo' + Math.random(), password: 'passwd' })
+            .then(continueApiFlow(agent, phase.apiFlow, 1, testState, Date.now(), { resolve, reject }))
+            .catch((err) => {
+              console.log('Error: ', err);
+              return reject(err);
+            });
+        }, delayBetweenEachReq * i);
       }
     });
   });
