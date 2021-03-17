@@ -1,20 +1,22 @@
 import { useState } from 'react';
 import qs from 'qs';
-import superagent from 'superagent';
+import superagent, { Response } from 'superagent';
 import { ChartData, Line } from 'react-chartjs-2';
-import { TestConfig } from '../types';
+import { TestConfig, BlitzResponseBody } from '../types';
+import { FORMAT, COLOURS } from '../ChartFormat';
  
 const NOT_STARTED = 'not started';
 const PENDING = 'pending';
 const COMPLETE = 'complete';
 const FAILED = 'failed';
 
+// duration = 2: server can handle rate of 40. With 50 you start to see some growth.
 const config: TestConfig = {
   testPhases: [
     {
       loadProfile: {
         duration: 2,
-        requestRate: 30,
+        requestRate: 50,
       },
       apiFlow: [
         {
@@ -49,59 +51,24 @@ function ConfigPage() {
         deadline: 600000,
         response: 600000,
       })
-      .then((res) => {
-        const { xAxisLabels } = res.body.testResults[0];
-        const { yAxisValues } = res.body.testResults[0];
+      .then((res: Response) => {
+        const body: BlitzResponseBody = res.body;
+        const { xAxisLabels } = body.testResults[0];
+        const { yAxisValues } = body.testResults[0];
+        const datasets: Chart.ChartDataSets[] = [];
+
+        yAxisValues.forEach((yVals, apiFlowIdx) => {
+          const label = `Flow ${apiFlowIdx}`;
+          const borderColor = COLOURS[apiFlowIdx];
+          const data = yVals;
+          datasets.push({ ...FORMAT, label, borderColor, data });
+        });
+
         const newdata: ChartData<Chart.ChartData> = {
           labels: xAxisLabels,
-          datasets: [
-            {
-              label: 'My First dataset',
-              fill: false,
-              lineTension: 0.1,
-              backgroundColor: 'rgba(75,192,192,0.4)',
-              borderColor: 'rgba(75,192,192,1)',
-              borderCapStyle: 'butt',
-              borderDash: [],
-              borderDashOffset: 0.0,
-              borderJoinStyle: 'miter',
-              pointBorderColor: 'rgba(75,192,192,1)',
-              pointBackgroundColor: '#fff',
-              pointBorderWidth: 1,
-              pointHoverRadius: 5,
-              pointHoverBackgroundColor: 'rgba(75,192,192,1)',
-              pointHoverBorderColor: 'rgba(220,220,220,1)',
-              pointHoverBorderWidth: 2,
-              pointRadius: 1,
-              pointHitRadius: 10,
-              data: yAxisValues[0],
-              // showLine: false,
-            },
-            {
-              label: 'My Second dataset',
-              fill: false,
-              lineTension: 0.1,
-              backgroundColor: 'rgba(75,192,192,0.4)',
-              borderColor: 'rgba(222,192,192,1)',
-              borderCapStyle: 'butt',
-              borderDash: [],
-              borderDashOffset: 0.0,
-              borderJoinStyle: 'miter',
-              pointBorderColor: 'rgba(75,192,192,1)',
-              pointBackgroundColor: '#fff',
-              pointBorderWidth: 1,
-              pointHoverRadius: 5,
-              pointHoverBackgroundColor: 'rgba(75,192,192,1)',
-              pointHoverBorderColor: 'rgba(220,220,220,1)',
-              pointHoverBorderWidth: 2,
-              pointRadius: 1,
-              pointHitRadius: 10,
-              // data: [50, 22],
-              data: yAxisValues[1],
-              // showLine: false,
-            }
-          ]
+          datasets,
         };
+
         setInitData(newdata);
         setPerfState(COMPLETE);
       })
