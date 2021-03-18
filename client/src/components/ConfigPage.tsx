@@ -4,6 +4,7 @@ import superagent, { Response } from 'superagent';
 import { ChartData, Line } from 'react-chartjs-2';
 import { TestConfig, BlitzResponseBody } from '../types';
 import { FORMAT, COLOURS } from '../ChartFormat';
+import './ConfigPage.css';
  
 const NOT_STARTED = 'not started';
 const PENDING = 'pending';
@@ -93,7 +94,24 @@ function ConfigPage() {
   }
 
   return (
-    <button onClick={startPerfTest}>Run</button>
+    <div>
+      <h1>Blitz</h1>
+      <div className='config-col'>
+        <div>
+          <h2>Load Profiles</h2>
+          <h3>Duration:</h3>
+          <h3>Request Rate:</h3>
+          <button>Add Profile</button>
+        </div>
+        <div>
+          <h2>API Flows</h2>
+          <h3>Method:</h3>
+          <h3>Resource:</h3>
+          <button>Add Flow</button>
+        </div>
+      </div>
+      <button onClick={startPerfTest}>Run</button>
+    </div>
   );
 }
 export default ConfigPage;
