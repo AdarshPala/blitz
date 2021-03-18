@@ -1,10 +1,12 @@
+export type Method = 'get' | 'put' | 'post' | 'patch' | 'delete';
+
 export interface LoadProfile {
   duration: number,
   requestRate: number,
 };
 
 export interface ApiRequest {
-  method: 'get' | 'put' | 'post' | 'patch' | 'delete',
+  method: Method,
   resource: string,
   body?: object,
 };

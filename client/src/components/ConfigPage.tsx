@@ -67,6 +67,7 @@ function ConfigPage() {
 
   const startPerfTest = () => {
     // console.log('loadProfiles', loadProfiles)
+    // console.log('apiFlows', apiFlows)
     // return;
     setPerfState(PENDING);
     superagent.get(`http://localhost:3003/?${qs.stringify(config)}`)
