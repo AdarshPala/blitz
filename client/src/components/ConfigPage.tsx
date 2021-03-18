@@ -2,9 +2,9 @@ import { useState } from 'react';
 import qs from 'qs';
 import superagent, { Response } from 'superagent';
 import { ChartData, Line } from 'react-chartjs-2';
-import { TestConfig, BlitzResponseBody } from '../types';
+import { TestConfig, BlitzResponseBody, LoadProfile } from '../types';
 import { FORMAT, COLOURS } from '../ChartFormat';
-import LoadProfileInput from './LoadProfileInput';
+import LoadProfileList from './LoadProfileList';
 import ApiFlowInput from './ApiFlowInput';
 import './ConfigPage.css';
  
@@ -46,8 +46,19 @@ function ConfigPage() {
   const data123 : ChartData<Chart.ChartData> = {};
   const [ perfTestState, setPerfState ] = useState(NOT_STARTED);
   const [ initdata, setInitData ] = useState(data123);
+  const [ loadProfiles, setLoadProfiles ] = useState<LoadProfile[]>([]);
+
+  const addProfile = () => {
+    const newLoadProfile: LoadProfile = {
+      duration: 0,
+      requestRate: 0,
+    };
+    setLoadProfiles(currLoadProfiles => [...currLoadProfiles, newLoadProfile ]);
+  };
 
   const startPerfTest = () => {
+    // console.log('loadProfiles', loadProfiles)
+    // return;
     setPerfState(PENDING);
     superagent.get(`http://localhost:3003/?${qs.stringify(config)}`)
       .timeout({
@@ -101,8 +112,8 @@ function ConfigPage() {
       <div className='config-col'>
         <div>
           <h2>Load Profiles</h2>
-          <LoadProfileInput />
-          <button>Add Profile</button>
+          <LoadProfileList setLoadProfiles={setLoadProfiles} loadProfiles={loadProfiles} />
+          <button onClick={addProfile}>Add Profile</button>
         </div>
         <div>
           <h2>API Flows</h2>
