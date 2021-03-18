@@ -4,6 +4,8 @@ import superagent, { Response } from 'superagent';
 import { ChartData, Line } from 'react-chartjs-2';
 import { TestConfig, BlitzResponseBody } from '../types';
 import { FORMAT, COLOURS } from '../ChartFormat';
+import LoadProfileInput from './LoadProfileInput';
+import ApiFlowInput from './ApiFlowInput';
 import './ConfigPage.css';
  
 const NOT_STARTED = 'not started';
@@ -99,14 +101,12 @@ function ConfigPage() {
       <div className='config-col'>
         <div>
           <h2>Load Profiles</h2>
-          <h3>Duration:</h3>
-          <h3>Request Rate:</h3>
+          <LoadProfileInput />
           <button>Add Profile</button>
         </div>
         <div>
           <h2>API Flows</h2>
-          <h3>Method:</h3>
-          <h3>Resource:</h3>
+          <ApiFlowInput />
           <button>Add Flow</button>
         </div>
       </div>
