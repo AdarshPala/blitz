@@ -2,10 +2,10 @@ import { useState } from 'react';
 import qs from 'qs';
 import superagent, { Response } from 'superagent';
 import { ChartData, Line } from 'react-chartjs-2';
-import { TestConfig, BlitzResponseBody, LoadProfile } from '../types';
+import { TestConfig, BlitzResponseBody, LoadProfile, ApiRequest } from '../types';
 import { FORMAT, COLOURS } from '../ChartFormat';
 import LoadProfileList from './LoadProfileList';
-import ApiFlowInput from './ApiFlowInput';
+import ApiFlowList from './ApiFlowList';
 import './ConfigPage.css';
  
 const NOT_STARTED = 'not started';
@@ -47,13 +47,22 @@ function ConfigPage() {
   const [ perfTestState, setPerfState ] = useState(NOT_STARTED);
   const [ initdata, setInitData ] = useState(data123);
   const [ loadProfiles, setLoadProfiles ] = useState<LoadProfile[]>([]);
+  const [ apiFlows, setApiFlows ] = useState<ApiRequest[][]>([]);
 
   const addProfile = () => {
     const newLoadProfile: LoadProfile = {
       duration: 0,
       requestRate: 0,
     };
-    setLoadProfiles(currLoadProfiles => [...currLoadProfiles, newLoadProfile ]);
+    setLoadProfiles(currLoadProfiles => [...currLoadProfiles, newLoadProfile]);
+  };
+
+  const addApiFlow = () => {
+    const newApiFlow: ApiRequest = {
+      method: 'put',
+      resource: '',
+    };
+    setApiFlows(currApiFlows => [...currApiFlows, [newApiFlow]]);
   };
 
   const startPerfTest = () => {
@@ -117,12 +126,13 @@ function ConfigPage() {
         </div>
         <div>
           <h2>API Flows</h2>
-          <ApiFlowInput />
-          <button>Add Flow</button>
+          <ApiFlowList setApiFlows={setApiFlows} apiFlows={apiFlows} />
+          <button onClick={addApiFlow}>Add Flow</button>
         </div>
       </div>
       <button onClick={startPerfTest}>Run</button>
     </div>
   );
 }
+
 export default ConfigPage;
