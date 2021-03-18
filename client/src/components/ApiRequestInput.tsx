@@ -1,4 +1,5 @@
 import { ApiRequest, Method } from "../types";
+import { getCredentials } from '../util';
 import './ApiRequestInput.css'
 
 interface Props {
@@ -36,6 +37,32 @@ function ApiRequestInput({ setApiFlows, apiFlow, apiFlowIdx, apiReqIdx }: Props)
       ));
     };
 
+  // TODO remove any
+  // const changeCredentials = (event: React.MouseEvent<HTMLInputElement>) => {
+  const changeCredentials = (event: any) => {
+    console.log(event.target.checked)
+    const checked: boolean = event.target.checked;
+    setApiFlows(((currApiFlows) => 
+      currApiFlows.map((currApiFlow, currApiFlowIdx) => {
+        if (currApiFlowIdx === apiFlowIdx) {
+          return currApiFlow.map((currApiReq, currApiReqIdx) => {
+            if (currApiReqIdx === apiReqIdx) {
+              return {
+                method: currApiReq.method,
+                resource: currApiReq.resource,
+                body: checked ? getCredentials(): undefined,
+              };
+            } else {
+              return currApiReq;
+            }
+          });
+        } else {
+          return currApiFlow;
+        }
+      })
+    ));
+  };
+
   return (
     <div className="api-req-input">
       <h4>Number: {apiFlowIdx}, {apiReqIdx}</h4>
@@ -44,7 +71,7 @@ function ApiRequestInput({ setApiFlows, apiFlow, apiFlowIdx, apiReqIdx }: Props)
       <h3>Resource:</h3>
       <input type="text" defaultValue={apiFlow.resource} onChange={changeApiRequest('resource')} />
       <h3>Credentials:</h3>
-      <input type="checkbox" onClick={() => {}} />
+      <input type="checkbox" onClick={changeCredentials} />
     </div>
   );
 }
