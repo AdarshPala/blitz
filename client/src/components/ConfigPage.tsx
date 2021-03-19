@@ -15,32 +15,6 @@ const COMPLETE = 'complete';
 const FAILED = 'failed';
 
 // duration = 2: server can handle rate of 40. With 50 you start to see some growth.
-const config: TestConfig = {
-  testPhases: [
-    {
-      loadProfile: {
-        duration: 2,
-        requestRate: 50,
-      },
-      apiFlow: [
-        {
-          method: 'put',
-          resource: 'users',
-          body: {
-            username: 'heyo' + Math.random(),
-            password: 'passwd',
-          },
-        },
-        {
-          method: 'get',
-          resource: 'conversations',
-        },
-      ],
-    }
-  ],
-  domain: 'http://localhost',
-  port: 3001,
-};
 
 function ConfigPage() {
   // To change height/width you can try using ChartComponent instead (defined in react-chartjs-2\index.d.ts)
@@ -76,13 +50,27 @@ function ConfigPage() {
     setTestPhases(currTestPhases => [...currTestPhases, newTestPhase]);
   };
 
+  const constructTestConfig = () => {
+    const config: TestConfig = {
+      testPhases: [],
+      domain: 'http://localhost',
+      port: 3001,
+    };
+
+    testPhases.forEach(([ loadProfileIdx, apiFlowIdx ], testPhaseIdx) => {
+      config.testPhases.push({
+        loadProfile: loadProfiles[loadProfileIdx],
+        apiFlow: apiFlows[apiFlowIdx],
+      });
+    });
+
+    console.log(config)
+    return config;
+  };
+
   const startPerfTest = () => {
-    // console.log('loadProfiles', loadProfiles)
-    // console.log('apiFlows', apiFlows)
-    // console.log('testPhases', testPhases)
-    // return;
     setPerfState(PENDING);
-    superagent.get(`http://localhost:3003/?${qs.stringify(config)}`)
+    superagent.get(`http://localhost:3003/?${qs.stringify(constructTestConfig())}`)
       .timeout({
         deadline: 600000,
         response: 600000,
