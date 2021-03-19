@@ -7,6 +7,7 @@ import { FORMAT, COLOURS } from '../ChartFormat';
 import LoadProfileList from './LoadProfileList';
 import ApiFlowList from './ApiFlowList';
 import './ConfigPage.css';
+import TestPhaseList from './TestPhaseList';
  
 const NOT_STARTED = 'not started';
 const PENDING = 'pending';
@@ -48,6 +49,7 @@ function ConfigPage() {
   const [ initdata, setInitData ] = useState(data123);
   const [ loadProfiles, setLoadProfiles ] = useState<LoadProfile[]>([]);
   const [ apiFlows, setApiFlows ] = useState<ApiRequest[][]>([]);
+  const [ testPhases, setTestPhases ] = useState<number[][]>([]);
 
   const addProfile = () => {
     const newLoadProfile: LoadProfile = {
@@ -65,9 +67,19 @@ function ConfigPage() {
     setApiFlows(currApiFlows => [...currApiFlows, [newApiFlow]]);
   };
 
+  const addTestPhase = () => {
+    if (!loadProfiles.length || !apiFlows.length) {
+      return;
+    }
+
+    const newTestPhase = [0, 0];
+    setTestPhases(currTestPhases => [...currTestPhases, newTestPhase]);
+  };
+
   const startPerfTest = () => {
     // console.log('loadProfiles', loadProfiles)
     // console.log('apiFlows', apiFlows)
+    // console.log('testPhases', testPhases)
     // return;
     setPerfState(PENDING);
     superagent.get(`http://localhost:3003/?${qs.stringify(config)}`)
@@ -130,6 +142,16 @@ function ConfigPage() {
           <ApiFlowList setApiFlows={setApiFlows} apiFlows={apiFlows} />
           <button onClick={addApiFlow}>Add Flow</button>
         </div>
+      </div>
+      <div>
+        <h2>Test Phases</h2>
+        <TestPhaseList
+          setTestPhases={setTestPhases}
+          testPhases={testPhases}
+          loadProfiles={loadProfiles}
+          apiFlows={apiFlows}
+        />
+        <button onClick={addTestPhase}>Add Test Phase</button>
       </div>
       <button onClick={startPerfTest}>Run</button>
     </div>

@@ -40,7 +40,6 @@ function ApiRequestInput({ setApiFlows, apiFlow, apiFlowIdx, apiReqIdx }: Props)
   // TODO remove any
   // const changeCredentials = (event: React.MouseEvent<HTMLInputElement>) => {
   const changeCredentials = (event: any) => {
-    console.log(event.target.checked)
     const checked: boolean = event.target.checked;
     setApiFlows(((currApiFlows) => 
       currApiFlows.map((currApiFlow, currApiFlowIdx) => {
