@@ -64,13 +64,15 @@ function ApiRequestInput({ setApiFlows, apiFlow, apiFlowIdx, apiReqIdx }: Props)
 
   return (
     <div className="api-req-input">
-      <h4>Number: {apiFlowIdx}, {apiReqIdx}</h4>
-      <h3>Method:</h3>
-      <input type="text" defaultValue={apiFlow.method} onChange={changeApiRequest('method')} />
-      <h3>Resource:</h3>
-      <input type="text" defaultValue={apiFlow.resource} onChange={changeApiRequest('resource')} />
-      <h3>Credentials:</h3>
-      <input type="checkbox" onClick={changeCredentials} />
+      <h5>Flow #{apiFlowIdx}, Req #{apiReqIdx}</h5>
+      <h4>Method:</h4>
+      <input className="form-control input-field" type="text" defaultValue={apiFlow.method} onChange={changeApiRequest('method')} />
+      <h4>Resource:</h4>
+      <input className="form-control input-field" type="text" defaultValue={apiFlow.resource} onChange={changeApiRequest('resource')} />
+      <span className="creds">
+        <h4>Credentials:</h4>
+        <input className="form-check-input checkbox" type="checkbox" onClick={changeCredentials} />
+      </span>
     </div>
   );
 }

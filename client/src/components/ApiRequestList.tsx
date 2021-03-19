@@ -43,7 +43,7 @@ function ApiRequestList({ setApiFlows, apiFlow, apiFlowIdx }: Props) {
           )
         }
       </div>
-      <button onClick={addApiRequest}>Add Request</button>
+      <button className="btn btn-outline-dark btn-sm add-req-btn" onClick={addApiRequest}>Add Request</button>
       <br></br>
       <br></br>
     </>

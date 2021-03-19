@@ -64,11 +64,11 @@ function ConfigPage() {
       });
     });
 
-    console.log(config)
     return config;
   };
 
   const startPerfTest = () => {
+    // return console.log(constructTestConfig());
     setPerfState(PENDING);
     superagent.get(`http://localhost:3003/?${qs.stringify(constructTestConfig())}`)
       .timeout({
@@ -117,31 +117,31 @@ function ConfigPage() {
   }
 
   return (
-    <div>
-      <h1>Blitz</h1>
+    <div className="config-page">
+      <h1 className="config-header">Blitz</h1>
       <div className='config-col'>
         <div>
-          <h2>Load Profiles</h2>
+          <h2 className="section-header">Load Profiles</h2>
           <LoadProfileList setLoadProfiles={setLoadProfiles} loadProfiles={loadProfiles} />
-          <button onClick={addProfile}>Add Profile</button>
+          <button className="btn btn-warning add-btn" onClick={addProfile}>Add Profile</button>
         </div>
         <div>
-          <h2>API Flows</h2>
+          <h2 className="section-header">API Flows</h2>
           <ApiFlowList setApiFlows={setApiFlows} apiFlows={apiFlows} />
-          <button onClick={addApiFlow}>Add Flow</button>
+          <button className="btn btn-warning add-btn" onClick={addApiFlow}>Add Flow</button>
         </div>
       </div>
       <div>
-        <h2>Test Phases</h2>
+        <h2 className="section-header">Test Phases</h2>
         <TestPhaseList
           setTestPhases={setTestPhases}
           testPhases={testPhases}
           loadProfiles={loadProfiles}
           apiFlows={apiFlows}
         />
-        <button onClick={addTestPhase}>Add Test Phase</button>
+        <button className="btn btn-warning add-btn" onClick={addTestPhase}>Add Test Phase</button>
       </div>
-      <button onClick={startPerfTest}>Run</button>
+      <button className="btn btn-outline-danger btn-lg add-btn" onClick={startPerfTest}>Run</button>
     </div>
   );
 }

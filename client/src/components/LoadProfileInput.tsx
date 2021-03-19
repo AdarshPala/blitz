@@ -31,11 +31,11 @@ function LoadProfileInput({ setLoadProfiles, idx, loadProfile }: Props) {
 
   return (
     <div className="load-profile-input">
-      <h4>Number: {idx}</h4>
-      <h3>Duration:</h3>
-      <input type="text" defaultValue={loadProfile.duration} onChange={changeLoadProfile('duration')} />
-      <h3>Request Rate:</h3>
-      <input type="text" defaultValue={loadProfile.requestRate} onChange={changeLoadProfile('requestRate')} />
+      <h5>Load Profile #{idx}</h5>
+      <h4>Duration:</h4>
+      <input className="form-control input-field" type="text" defaultValue={loadProfile.duration} onChange={changeLoadProfile('duration')} />
+      <h4>Request Rate:</h4>
+      <input className="form-control input-field" type="text" defaultValue={loadProfile.requestRate} onChange={changeLoadProfile('requestRate')} />
     </div>
   );
 }

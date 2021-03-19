@@ -1,3 +1,14 @@
 .api-req-input {
-  border-style: dotted;
+  border-bottom: 1px dashed orange ;
+  padding: 10px;
+}
+
+.creds {
+  display: flex;
+}
+
+.checkbox {
+  margin-top: 9px;
+  margin-left: 12px;
+  transform: scale(1.2);
 }

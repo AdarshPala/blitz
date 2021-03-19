@@ -1,9 +1,26 @@
+.config-page {
+  margin: 10px;
+}
+
+.config-header {
+  border-bottom: 2px solid orange;
+  margin-bottom: 10px;
+}
+
+.section-header {
+  text-decoration: underline solid orange 2px;
+}
+
 .config-col {
   display: flex;
   flex-direction: row;
 }
 
 .config-col > div {
-  /* margin-left: 30px; */
   flex-grow: 1;
+}
+
+.add-btn {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }

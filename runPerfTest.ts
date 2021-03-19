@@ -57,6 +57,7 @@ const continueApiFlow =
       agent[apiFlow[apiFlowIdx].method](endpoint)
         .timeout(TIMEOUT_INFO)
         .send({ username: 'foo' + Math.random(), password: 'passwd' })
+        // .send(apiFlow[apiFlowIdx].body)
         .then(continueApiFlow(agent, apiFlow, apiFlowIdx + 1, testState, Date.now(), promiseCb))
         .catch((err) => {
           console.log('Error IN CONTINUE: ', err);
@@ -97,7 +98,7 @@ const runPerfTest = (config: TestConfig) => {
           agent[phase.apiFlow[0].method](endpoint)
           // agent['get'](`http://localhost:3001/fib/${20}`)
             .timeout(TIMEOUT_INFO)
-            //.send(apiReq.body)
+            // .send(phase.apiFlow[0].body)
             .send({ username: 'foo' + Math.random(), password: 'passwd' })
             .then(continueApiFlow(agent, phase.apiFlow, 1, testState, Date.now(), { resolve, reject }))
             .catch((err) => {

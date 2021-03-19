@@ -1,5 +1,6 @@
 import { ChangeEvent } from "react";
 import { ApiRequest, LoadProfile } from "../types";
+import './TestPhaseInput.css';
 
 interface Props {
   setTestPhases: React.Dispatch<React.SetStateAction<number[][]>>; 
@@ -45,16 +46,16 @@ function TestPhaseInput({ setTestPhases, loadProfiles, apiFlows, testPhaseIdx }:
 
   return (
     <>
-      <label htmlFor="loadProfile">Load Profile:</label>
-      <select name="loadProfile" onChange={changeTestPhase('loadProfile')}>
-        {getLoadProfileOptions()}
-      </select>
-      <label htmlFor="apiFlow">API Flow:</label>
-      <select name="apiFlow" onChange={changeTestPhase('apiFlow')}>
-        {getApiFlowOptions()}
-      </select>
-      <br></br>
-      <br></br>
+      <span className="phase">
+        <h4>Load Profile:</h4>
+        <select className="form-select dropdown" onChange={changeTestPhase('loadProfile')}>
+          {getLoadProfileOptions()}
+        </select>
+        <h4>API Flow:</h4>
+        <select className="form-select dropdown" onChange={changeTestPhase('apiFlow')}>
+          {getApiFlowOptions()}
+        </select>
+      </span>
     </>
   );
 }
