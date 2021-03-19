@@ -5,8 +5,6 @@ type SessionAgent = superagent.SuperAgentStatic & superagent.Request;
 type TestResolve =  (value: BlitzResponseBody | PromiseLike<BlitzResponseBody>) => void;
 type TestReject = (reason?: any) => void;
 interface TestState {
-  phaseIdx: number,
-  apiFlowIdx: number,
   totalNumOfReqToSend: number,
   totalNumOfResReceived: number,
   testResults: GraphData[],
@@ -38,11 +36,37 @@ const getInitialYAxisValues = (numOfReqInFlow: number) => {
   return initalYAxisValues;
 };
 
-const continueApiFlow =
-  (agent: SessionAgent, apiFlow: ApiRequest[], apiFlowIdx: number, testState: TestState, startTime: number, promiseCb: PromiseCb) =>
+const getInitialTestResults = (numOfTestPhases: number) => {
+  const initalTestResults: GraphData[] = [];
+  for (let i = 0; i < numOfTestPhases; i++) {
+    initalTestResults.push({ xAxisLabels: [], yAxisValues: [] });
+  }
+
+  return initalTestResults;
+};
+
+const getTotalNumOfReqToSend = (config: TestConfig) => {
+  let totalNumOfReqToSend = 0
+  config.testPhases.forEach((phase) => {
+    totalNumOfReqToSend +=
+      phase.loadProfile.duration * phase.loadProfile.requestRate * phase.apiFlow.length;
+  });
+
+  return totalNumOfReqToSend;
+};
+
+const continueApiFlow = (
+    agent: SessionAgent,
+    apiFlow: ApiRequest[],
+    phaseIdx: number,
+    apiFlowIdx: number,
+    testState: TestState,
+    startTime: number,
+    promiseCb: PromiseCb
+  ) =>
     (res: superagent.Response) => {
       const respTime = Date.now() - startTime;
-      testState.testResults[testState.phaseIdx].yAxisValues[apiFlowIdx - 1].push(respTime);
+      testState.testResults[phaseIdx].yAxisValues[apiFlowIdx - 1].push(respTime);
       testState.totalNumOfResReceived++;
 
       if (testState.totalNumOfResReceived === testState.totalNumOfReqToSend) {
@@ -58,38 +82,32 @@ const continueApiFlow =
         .timeout(TIMEOUT_INFO)
         .send({ username: 'foo' + Math.random(), password: 'passwd' })
         // .send(apiFlow[apiFlowIdx].body)
-        .then(continueApiFlow(agent, apiFlow, apiFlowIdx + 1, testState, Date.now(), promiseCb))
+        .then(continueApiFlow(agent, apiFlow, phaseIdx, apiFlowIdx + 1, testState, Date.now(), promiseCb))
         .catch((err) => {
           console.log('Error IN CONTINUE: ', err);
           return promiseCb.reject(err);
         });
     };
 
-// Assuming a single phase for now
 const runPerfTest = (config: TestConfig) => {
   const testState: TestState = {
-    phaseIdx: 0,
-    apiFlowIdx: 0,
     totalNumOfResReceived: 0,
-    // totalNumOfReqToSend: getTotalNumOfReqToSend(config),
-    totalNumOfReqToSend: 0,
-    testResults: [{ xAxisLabels: [], yAxisValues: [] }],
+    totalNumOfReqToSend: getTotalNumOfReqToSend(config),
+    testResults: getInitialTestResults(config.testPhases.length),
   };
 
   const perfTest = new Promise<BlitzResponseBody>((resolve, reject) => {
     config.testPhases.forEach((phase, phaseIdx) => {
       testState.testResults[phaseIdx].yAxisValues = getInitialYAxisValues(phase.apiFlow.length);
-      const totalNumOfReq = phase.loadProfile.duration * phase.loadProfile.requestRate;
-      testState.totalNumOfReqToSend = totalNumOfReq * phase.apiFlow.length;
+      const initialNumOfReqs = phase.loadProfile.duration * phase.loadProfile.requestRate;
       // TODO Add pause functionality if requestRate is 0
       const delayBetweenEachReq = 1 / phase.loadProfile.requestRate * MS_PER_SEC;
 
-      console.log('total req', totalNumOfReq)
+      console.log('num of reqs', initialNumOfReqs)
       console.log('req delay', delayBetweenEachReq)
-      // console.log('apiidx', testState.apiFlowIdx)
-      for (let i = 0; i < totalNumOfReq; i++) {
-        testState.testResults[0].xAxisLabels.push(i);
-        // testState.apiFlowIdx++;
+
+      for (let i = 0; i < initialNumOfReqs; i++) {
+        testState.testResults[phaseIdx].xAxisLabels.push(i);
 
         const agent = superagent.agent();
 
@@ -100,7 +118,7 @@ const runPerfTest = (config: TestConfig) => {
             .timeout(TIMEOUT_INFO)
             // .send(phase.apiFlow[0].body)
             .send({ username: 'foo' + Math.random(), password: 'passwd' })
-            .then(continueApiFlow(agent, phase.apiFlow, 1, testState, Date.now(), { resolve, reject }))
+            .then(continueApiFlow(agent, phase.apiFlow, phaseIdx, 1, testState, Date.now(), { resolve, reject }))
             .catch((err) => {
               console.log('Error: ', err);
               return reject(err);

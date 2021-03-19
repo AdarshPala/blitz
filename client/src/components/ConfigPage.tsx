@@ -6,19 +6,43 @@ import { TestConfig, BlitzResponseBody, LoadProfile, ApiRequest } from '../types
 import { FORMAT, COLOURS } from '../ChartFormat';
 import LoadProfileList from './LoadProfileList';
 import ApiFlowList from './ApiFlowList';
-import './ConfigPage.css';
 import TestPhaseList from './TestPhaseList';
+import './ConfigPage.css';
  
 const NOT_STARTED = 'not started';
 const PENDING = 'pending';
 const COMPLETE = 'complete';
 const FAILED = 'failed';
 
+const TIMEOUT_INFO = {
+  deadline: 600000,
+  response: 600000,
+};
+
 // duration = 2: server can handle rate of 40. With 50 you start to see some growth.
+
+const getGraphs = (body: BlitzResponseBody) =>
+  body.testResults.map((testPhaseResult) => {
+    const { xAxisLabels } = testPhaseResult;
+    const { yAxisValues } = testPhaseResult;
+    const datasets: Chart.ChartDataSets[] = [];
+
+    yAxisValues.forEach((yVals, apiFlowIdx) => {
+      const label = `Flow ${apiFlowIdx}`;
+      const borderColor = COLOURS[apiFlowIdx];
+      const data = yVals;
+      datasets.push({ ...FORMAT, label, borderColor, data });
+    });
+
+    return {
+      labels: xAxisLabels,
+      datasets,
+    };
+  });
 
 function ConfigPage() {
   // To change height/width you can try using ChartComponent instead (defined in react-chartjs-2\index.d.ts)
-  const data123 : ChartData<Chart.ChartData> = {};
+  const data123: ChartData<Chart.ChartData>[] = [{}];
   const [ perfTestState, setPerfState ] = useState(NOT_STARTED);
   const [ initdata, setInitData ] = useState(data123);
   const [ loadProfiles, setLoadProfiles ] = useState<LoadProfile[]>([]);
@@ -71,36 +95,17 @@ function ConfigPage() {
     // return console.log(constructTestConfig());
     setPerfState(PENDING);
     superagent.get(`http://localhost:3003/?${qs.stringify(constructTestConfig())}`)
-      .timeout({
-        deadline: 600000,
-        response: 600000,
-      })
+      .timeout(TIMEOUT_INFO)
       .then((res: Response) => {
         const body: BlitzResponseBody = res.body;
-        const { xAxisLabels } = body.testResults[0];
-        const { yAxisValues } = body.testResults[0];
-        const datasets: Chart.ChartDataSets[] = [];
-
-        yAxisValues.forEach((yVals, apiFlowIdx) => {
-          const label = `Flow ${apiFlowIdx}`;
-          const borderColor = COLOURS[apiFlowIdx];
-          const data = yVals;
-          datasets.push({ ...FORMAT, label, borderColor, data });
-        });
-
-        const newdata: ChartData<Chart.ChartData> = {
-          labels: xAxisLabels,
-          datasets,
-        };
-
-        setInitData(newdata);
+        setInitData(getGraphs(body));
         setPerfState(COMPLETE);
       })
       .catch((err) => {
-        console.log('ERRRROR', err)
+        console.log('Error', err)
         setPerfState(FAILED);
       });
-  }
+  };
 
   if (perfTestState === PENDING) {
     return (<h1> Pending... </h1>);
@@ -112,7 +117,9 @@ function ConfigPage() {
 
   if (perfTestState === COMPLETE) {
     return (
-      <Line data={initdata} />
+      <>
+        {initdata.map((graph, idx) => <Line key={idx} data={graph} />)}
+      </>
     );
   }
 
