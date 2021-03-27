@@ -53,6 +53,8 @@ function ConfigPage() {
   const [ loadProfiles, setLoadProfiles ] = useState<LoadProfile[]>([]);
   const [ apiFlows, setApiFlows ] = useState<ApiRequest[][]>([]);
   const [ testPhases, setTestPhases ] = useState<number[][]>([]);
+  const [ domain, setDomain ] = useState<string>('');
+  const [ port, setPort ] = useState<number | null>(null);
 
   const addProfile = () => {
     const newLoadProfile: LoadProfile = {
@@ -79,11 +81,31 @@ function ConfigPage() {
     setTestPhases(currTestPhases => [...currTestPhases, newTestPhase]);
   };
 
+  const handleDomainChange =  (event: React.ChangeEvent<HTMLInputElement>) => {
+    const input = event.target.value;
+    if (!input) {
+      return;
+    }
+
+    return setDomain(input);
+  };
+
+  const handlePortChange =  (event: React.ChangeEvent<HTMLInputElement>) => {
+    const input = event.target.value;
+    if (!input || isNaN(+input)) {
+      return;
+    }
+
+    return setPort(+input);
+  };
+
   const constructTestConfig = () => {
     const config: TestConfig = {
       testPhases: [],
-      domain: 'http://localhost',
-      port: 3001,
+      // domain: 'http://localhost',
+      domain: domain,
+      // port: 3001,
+      port: port || 0,
     };
 
     testPhases.forEach(([ loadProfileIdx, apiFlowIdx ], testPhaseIdx) => {
@@ -152,6 +174,12 @@ function ConfigPage() {
           apiFlows={apiFlows}
         />
         <button className="btn btn-warning add-btn" onClick={addTestPhase}>Add Test Phase</button>
+      </div>
+      <div>
+        <h4>Target Domain:</h4>
+        <input className="form-control target-input" type="text" onChange={handleDomainChange} />
+        <h4>Port Number:</h4>
+        <input className="form-control target-input" type="text" onChange={handlePortChange} />
       </div>
       <button className="btn btn-outline-danger btn-lg add-btn" onClick={startPerfTest}>Run</button>
     </div>
