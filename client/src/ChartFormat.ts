@@ -8,7 +8,6 @@ export const FORMAT: Chart.ChartDataSets =  {
   borderDash: [],
   borderDashOffset: 0.0,
   borderJoinStyle: 'miter',
-  pointBorderColor: 'rgba(75,192,192,1)',
   pointBackgroundColor: '#fff',
   pointBorderWidth: 1,
   pointHoverRadius: 5,
@@ -18,4 +17,25 @@ export const FORMAT: Chart.ChartDataSets =  {
   pointRadius: 1,
   pointHitRadius: 10,
   // showLine: false,
+};
+
+export const OPTIONS: Chart.ChartOptions = {
+  title: {
+    display: true,
+    text: '',
+  },
+  scales: {
+    yAxes: [{
+      scaleLabel: {
+        display: true,
+        labelString: 'Latency (ms)'
+      }
+    }],
+    xAxes: [{
+      scaleLabel: {
+        display: true,
+        labelString: 'Request Number'
+      }
+    }],
+  }     
 };

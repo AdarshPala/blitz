@@ -3,7 +3,7 @@ import qs from 'qs';
 import superagent, { Response } from 'superagent';
 import { ChartData, Line } from 'react-chartjs-2';
 import { TestConfig, BlitzResponseBody, LoadProfile, ApiRequest } from '../types';
-import { FORMAT, COLOURS } from '../ChartFormat';
+import { FORMAT, COLOURS, OPTIONS } from '../ChartFormat';
 import LoadProfileList from './LoadProfileList';
 import ApiFlowList from './ApiFlowList';
 import TestPhaseList from './TestPhaseList';
@@ -19,6 +19,11 @@ const TIMEOUT_INFO = {
   response: 600000,
 };
 
+const getOptions = (idx: number) => {
+  const title = { display: true, text: `Test Phase ${idx}` };
+  return { ...OPTIONS, title };
+};
+
 // duration = 2: server can handle rate of 40. With 50 you start to see some growth.
 
 const getGraphs = (body: BlitzResponseBody) =>
@@ -30,8 +35,9 @@ const getGraphs = (body: BlitzResponseBody) =>
     yAxisValues.forEach((yVals, apiFlowIdx) => {
       const label = `Flow ${apiFlowIdx}`;
       const borderColor = COLOURS[apiFlowIdx];
+      const pointBorderColor = COLOURS[apiFlowIdx];
       const data = yVals;
-      datasets.push({ ...FORMAT, label, borderColor, data });
+      datasets.push({ ...FORMAT, label, borderColor, pointBorderColor, data });
     });
 
     return {
@@ -118,7 +124,7 @@ function ConfigPage() {
   if (perfTestState === COMPLETE) {
     return (
       <>
-        {initdata.map((graph, idx) => <Line key={idx} data={graph} />)}
+        {initdata.map((graph, idx) => <Line key={idx} data={graph} options={getOptions(idx)} />)}
       </>
     );
   }
