@@ -4,15 +4,20 @@ import { TestConfig, ApiRequest, BlitzResponseBody, GraphData } from './client/s
 type SessionAgent = superagent.SuperAgentStatic & superagent.Request;
 type TestResolve =  (value: BlitzResponseBody | PromiseLike<BlitzResponseBody>) => void;
 type TestReject = (reason?: any) => void;
+type PhaseResolve =  (value: void | PromiseLike<void>) => void;
 interface TestState {
   totalNumOfReqToSend: number,
   totalNumOfResReceived: number,
+  numOfReqsToSendForCurrPhase: number,
+  numOfResReceivedForCurrPhase: number,
   testResults: GraphData[],
 };
 
 interface PromiseCb {
   resolve: TestResolve,
   reject: TestReject,
+  phaseResolve: PhaseResolve,
+  phaseReject: TestReject,
 };
 
 const MS_PER_SEC = 1e3;
@@ -64,9 +69,16 @@ const continueApiFlow = (
       const respTime = Date.now() - startTime;
       testState.testResults[phaseIdx].yAxisValues[apiFlowIdx - 1].push(respTime);
       testState.totalNumOfResReceived++;
+      testState.numOfResReceivedForCurrPhase++;
 
       if (testState.totalNumOfResReceived === testState.totalNumOfReqToSend) {
+        // Not required for some reason
+        // promiseCb.phaseResolve();
         return promiseCb.resolve({ testResults: testState.testResults });
+      }
+
+      if (testState.numOfResReceivedForCurrPhase === testState.numOfReqsToSendForCurrPhase) {
+        return promiseCb.phaseResolve();
       }
 
       if (apiFlowIdx === apiFlow.length) {
@@ -89,39 +101,52 @@ const runPerfTest = (config: TestConfig) => {
   const testState: TestState = {
     totalNumOfResReceived: 0,
     totalNumOfReqToSend: getTotalNumOfReqToSend(config),
+    numOfReqsToSendForCurrPhase: 0,
+    numOfResReceivedForCurrPhase: 0,
     testResults: getInitialTestResults(config.testPhases.length),
   };
 
-  const perfTest = new Promise<BlitzResponseBody>((resolve, reject) => {
-    config.testPhases.forEach((phase, phaseIdx) => {
-      testState.testResults[phaseIdx].yAxisValues = getInitialYAxisValues(phase.apiFlow.length);
-      const initialNumOfReqs = phase.loadProfile.duration * phase.loadProfile.requestRate;
-      // TODO Add pause functionality if requestRate is 0
-      const delayBetweenEachReq = 1 / phase.loadProfile.requestRate * MS_PER_SEC;
+  // https://stackoverflow.com/questions/43036229/is-it-an-anti-pattern-to-use-async-await-inside-of-a-new-promise-constructor
+  const perfTest = new Promise<BlitzResponseBody>(async (resolve, reject) => {
+    for (const [phaseIdx, phase] of config.testPhases.entries()) {
+      const phaseComplete = new Promise<void>((phaseResolve, phaseReject) => {
+        const promiseCb = { resolve, reject, phaseResolve, phaseReject };
 
-      console.log('num of reqs', initialNumOfReqs)
-      console.log('req delay', delayBetweenEachReq)
+        testState.testResults[phaseIdx].yAxisValues = getInitialYAxisValues(phase.apiFlow.length);
+        const initialNumOfReqs = phase.loadProfile.duration * phase.loadProfile.requestRate;
 
-      for (let i = 0; i < initialNumOfReqs; i++) {
-        testState.testResults[phaseIdx].xAxisLabels.push(i);
+        testState.numOfReqsToSendForCurrPhase = initialNumOfReqs * phase.apiFlow.length;
+        testState.numOfResReceivedForCurrPhase = 0;
 
-        const agent = superagent.agent();
+        // TODO Add pause functionality if requestRate is 0
+        const delayBetweenEachReq = 1 / phase.loadProfile.requestRate * MS_PER_SEC;
 
-        const endpoint = `${config.domain}:${config.port}/${phase.apiFlow[0].resource}`;
-        setTimeout(() => {
-          agent[phase.apiFlow[0].method](endpoint)
-          // agent['get'](`http://localhost:3001/fib/${20}`)
-            .timeout(TIMEOUT_INFO)
-            // .send(phase.apiFlow[0].body)
-            .send({ username: 'foo' + Math.random(), password: 'passwd' })
-            .then(continueApiFlow(agent, phase.apiFlow, phaseIdx, 1, testState, Date.now(), { resolve, reject }))
-            .catch((err) => {
-              console.log('Error: ', err);
-              return reject(err);
-            });
-        }, delayBetweenEachReq * i);
-      }
-    });
+        console.log('num of reqs', initialNumOfReqs)
+        console.log('req delay', delayBetweenEachReq)
+
+        for (let i = 0; i < initialNumOfReqs; i++) {
+          testState.testResults[phaseIdx].xAxisLabels.push(i);
+
+          const agent = superagent.agent();
+
+          const endpoint = `${config.domain}:${config.port}/${phase.apiFlow[0].resource}`;
+          setTimeout(() => {
+            agent[phase.apiFlow[0].method](endpoint)
+            // agent['get'](`http://localhost:3001/fib/${20}`)
+              .timeout(TIMEOUT_INFO)
+              // .send(phase.apiFlow[0].body)
+              .send({ username: 'foo' + Math.random(), password: 'passwd' })
+              .then(continueApiFlow(agent, phase.apiFlow, phaseIdx, 1, testState, Date.now(), promiseCb))
+              .catch((err) => {
+                console.log('Error: ', err);
+                return reject(err);
+              });
+          }, delayBetweenEachReq * i);
+        }
+      });
+
+      await phaseComplete;
+    };
   });
 
   return perfTest;
