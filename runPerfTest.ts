@@ -22,10 +22,6 @@ const TIMEOUT_INFO = {
 };
 
 // TODO https://visionmedia.github.io/superagent/#error-handling
-// clean up code, try to get rid of globals, don't hardcode anything e.g. yAxisValues
-// no any types (for resolve), generalize code for multiple phases/apiFlows,
-// try to include apiFlowIdx in testState by calling a function on testState when passing it to
-// continueApiFlow that increments apiFlowIdx
 
 const getInitialYAxisValues = (numOfReqInFlow: number) => {
   const initalYAxisValues: number[][] = [];
