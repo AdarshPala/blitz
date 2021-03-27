@@ -2,6 +2,7 @@ import { useState } from 'react';
 import qs from 'qs';
 import superagent, { Response } from 'superagent';
 import { ChartData, Line } from 'react-chartjs-2';
+import fileDownload from 'js-file-download';
 import { TestConfig, BlitzResponseBody, LoadProfile, ApiRequest } from '../types';
 import { FORMAT, COLOURS, OPTIONS } from '../ChartFormat';
 import LoadProfileList from './LoadProfileList';
@@ -55,6 +56,7 @@ function ConfigPage() {
   const [ testPhases, setTestPhases ] = useState<number[][]>([]);
   const [ domain, setDomain ] = useState<string>('');
   const [ port, setPort ] = useState<number | null>(null);
+  const [ importedConfig, setImportedConfig ] = useState<TestConfig | null>(null);
 
   const addProfile = () => {
     const newLoadProfile: LoadProfile = {
@@ -81,7 +83,7 @@ function ConfigPage() {
     setTestPhases(currTestPhases => [...currTestPhases, newTestPhase]);
   };
 
-  const handleDomainChange =  (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDomainChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const input = event.target.value;
     if (!input) {
       return;
@@ -90,7 +92,7 @@ function ConfigPage() {
     return setDomain(input);
   };
 
-  const handlePortChange =  (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePortChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const input = event.target.value;
     if (!input || isNaN(+input)) {
       return;
@@ -99,7 +101,31 @@ function ConfigPage() {
     return setPort(+input);
   };
 
+  const handleExport = () => {
+    return fileDownload(JSON.stringify(constructTestConfig()), 'blitzConfig.json');
+  };
+
+  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files ? event.target.files[0] : null;
+    const reader = new FileReader();
+
+    reader.onload = function(event) {
+      if (event.target) {
+        const data = event.target.result || '';
+        setImportedConfig(JSON.parse(data as string));
+      } else {
+        console.log('Error: no file');
+      }
+    };
+
+    reader.readAsText(file || new Blob());
+  };
+
   const constructTestConfig = () => {
+    if (importedConfig) {
+      return importedConfig;
+    }
+
     const config: TestConfig = {
       testPhases: [],
       // domain: 'http://localhost',
@@ -180,6 +206,11 @@ function ConfigPage() {
         <input className="form-control target-input" type="text" onChange={handleDomainChange} />
         <h4>Port Number:</h4>
         <input className="form-control target-input" type="text" onChange={handlePortChange} />
+      </div>
+      <div>
+        <br></br>
+        <button className="" onClick={handleExport}>Export</button>
+        <input type="file" onChange={handleImport}/>
       </div>
       <button className="btn btn-outline-danger btn-lg add-btn" onClick={startPerfTest}>Run</button>
     </div>
