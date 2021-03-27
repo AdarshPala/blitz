@@ -48,9 +48,8 @@ const getGraphs = (body: BlitzResponseBody) =>
 
 function ConfigPage() {
   // To change height/width you can try using ChartComponent instead (defined in react-chartjs-2\index.d.ts)
-  const data123: ChartData<Chart.ChartData>[] = [{}];
   const [ perfTestState, setPerfState ] = useState(NOT_STARTED);
-  const [ initdata, setInitData ] = useState(data123);
+  const [ graphData, setGraphData ] = useState<ChartData<Chart.ChartData>[]>([{}]);
   const [ loadProfiles, setLoadProfiles ] = useState<LoadProfile[]>([]);
   const [ apiFlows, setApiFlows ] = useState<ApiRequest[][]>([]);
   const [ testPhases, setTestPhases ] = useState<number[][]>([]);
@@ -104,7 +103,7 @@ function ConfigPage() {
       .timeout(TIMEOUT_INFO)
       .then((res: Response) => {
         const body: BlitzResponseBody = res.body;
-        setInitData(getGraphs(body));
+        setGraphData(getGraphs(body));
         setPerfState(COMPLETE);
       })
       .catch((err) => {
@@ -124,7 +123,7 @@ function ConfigPage() {
   if (perfTestState === COMPLETE) {
     return (
       <>
-        {initdata.map((graph, idx) => <Line key={idx} data={graph} options={getOptions(idx)} />)}
+        {graphData.map((graph, idx) => <Line key={idx} data={graph} options={getOptions(idx)} />)}
       </>
     );
   }
